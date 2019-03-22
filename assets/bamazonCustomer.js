@@ -20,30 +20,45 @@ connection.connect(function(err) {
   connection.query("select * from products", function(error, results) {
     if (error) throw error;
 
-    for (var i=0; i<results.length; i++){
-    var itemsForSale = results[i].id;
-    var productName = results[i].product_name;
-    var departmentName = results[i].department_name;
-    var itemPrice = results[i].price;
-    var stockQuantity = results[i].stock_quantity;
-    console.log("Item#: " + itemsForSale);
-    console.log("Department: " + departmentName);
-    console.log("Product: " + productName);
-    console.log("Price: " + itemPrice);
-    console.log("Stock: " + stockQuantity);
-    console.log("-----------");
+    for (var i = 0; i < results.length; i++) {
+      var itemsForSale = results[i].id;
+      var productName = results[i].product_name;
+      var departmentName = results[i].department_name;
+      var itemPrice = results[i].price;
+      var stockQuantity = results[i].stock_quantity;
+      console.log("Item#: " + itemsForSale);
+      console.log("Department: " + departmentName);
+      console.log("Product: " + productName);
+      console.log("Price: " + itemPrice);
+      console.log("Stock: " + stockQuantity);
+      console.log("-----------");
     }
-    buyPrompt(itemsForSale);
+
+    //Calling Inquirer Functions
+    selectionPrompt(itemsForSale);
   });
 
-  function buyPrompt() {
-    inquirer.prompt({
-      name: "action",
-      type: "list",
-      message: "What would you like to purchase?",
-      choices: []
-    });
-  }
+  //-------------------------------------------------------
+  // ---------------------Inquirer-------------------------
+  function selectionPrompt() {
+    inquirer.prompt([{
+      name: "purchaseItem",
+      type: "input",
+      message: "Please enter the ID number of the item you would like to purchase?",
+    },
+    {
+      name: "purchaseQuantity",
+      type: "input",
+      message: "How many units of this product would you like to purchase?"
+    }
+    ]).then(function(buyPrompt){
+
+
+
+    })
+  };
+
+
   //Always keep /.end otherwise it will stay connected
   connection.end();
 });

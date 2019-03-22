@@ -19,9 +19,20 @@ connection.connect(function(err) {
   console.log("connected as id " + connection.threadId);
   connection.query("select * from products", function(error, results) {
     if (error) throw error;
-    var itemsForSale = results;
-    console.log(itemsForSale);
 
+    for (var i=0; i<results.length; i++){
+    var itemsForSale = results[i].id;
+    var productName = results[i].product_name;
+    var departmentName = results[i].department_name;
+    var itemPrice = results[i].price;
+    var stockQuantity = results[i].stock_quantity;
+    console.log("Item#: " + itemsForSale);
+    console.log("Department: " + departmentName);
+    console.log("Product: " + productName);
+    console.log("Price: " + itemPrice);
+    console.log("Stock: " + stockQuantity);
+    console.log("-----------");
+    }
     buyPrompt(itemsForSale);
   });
 

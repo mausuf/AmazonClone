@@ -35,7 +35,7 @@ connection.connect(function(err) {
           results[i].department_name,
           results[i].product_name,
           results[i].price,
-          results[i].stock_quantity
+          parseInt(results[i].stock_quantity, 10)
         ]);
       }
       console.log(inventoryTable.toString());
@@ -49,7 +49,7 @@ connection.connect(function(err) {
 
   //-------------------------------------------------------
   // ---------------------Inquirer-------------------------
-  function selectionPrompt(answer) {
+  function selectionPrompt() {
     inquirer
       .prompt([
         {
@@ -66,28 +66,36 @@ connection.connect(function(err) {
       ])
       .then(function(answer) {
         //Connection to database to verify stock quantity
-        connection.query(
-          "SELECT * FROM products WHERE ?",
-          {id: answer.purchaseItemID},
-          function(error, results) {
-            // for (var i = 0; i < results.length; i++) {
-            var selectedID = (answer.id) - 1;
-            var selectedQuantity = parseInt(answer.stock_quantity);
-            if (selectedQuantity > selectedID.stock_quantity) {
+        var query = "SELECT * FROM products WHERE ?"
+        connection.query(query,{purchaseItemID: answer.id},function(error, results) {
+            
+            var selectedID = parseInt((answer.id) - 1, 10);
+            var selectedQuantity = parseInt(answer.stock_quantity, 10);
+
+            console.log(answer);
+            console.log(selectedID);
+          
+            for (var i = 0; i < 11; i++) {
+            
+            // connection.query("SELECT * FROM products", function(error, results) {
+
+            if (selectedQuantity > 100) {
               console.log(
                 "Sorry, not enough stock. Please select the product and a lower quantity until our stocks have been replenished, we aplogize for the inconvenience."
               );
-              selectionPrompt();
+              // selectionPrompt();
               console.log(error);
+      
               
             } else {
               // console.log("Product: " + results[0].product_name);
               console.log(answer.stock_quantity);
             }
-            // }
+            }
           }
         );
-      });
+      // });
+    });
   }
 
   //Always keep /.end otherwise it will stay connected

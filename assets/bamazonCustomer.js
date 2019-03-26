@@ -105,25 +105,49 @@ connection.connect(function(err) {
                 results[i].stock_quantity - answer.purchaseQuantity;
               var purchaseID = answer.purchaseItemID;
               checkout(newStock, purchaseID);
-            };
-          };
+            }
+          }
         });
       });
-  };
+  }
 
   //-------------------------------------------------------
   // -----------------Customer Checkout--------------------
   function checkout(newStock, purchaseID) {
-    inquirer.prompt([{
-      name: "checkout",
-      type: "confirm",
-      message:
-        "Are you sure you would like to purchase this item and quantity amount?", 
-      default: true
-    }]);
-  };
-
-
+    inquirer
+      .prompt([
+        {
+          name: "checkout",
+          type: "confirm",
+          message:
+            "Are you sure you would like to purchase this item and quantity amount?",
+          default: true
+        }
+      ])
+      //-----------------Update SQL Table Inventory Column--------------------
+      .then(function(user) {
+        if (user.checkout === true) {
+          connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [
+              {
+                stock_quantity: newStock
+              },
+              {
+                id: purchaseID
+              }
+            ],
+            function(error, results) {}
+          );
+          console.log("Thank you for your purchase");
+        } else {
+          console.log(
+            "No problem, we hope you come back again soon to see our new inventory!"
+          );
+          showInventory();
+        }
+      });
+  }
   //Always keep /.end otherwise it will stay connected
   // connection.end();
 });

@@ -74,23 +74,24 @@ connection.connect(function(err) {
             var selectedID = parseInt((answer.id) - 1, 10);
             var selectedQuantity = parseInt(answer.stock_quantity, 10);
             
-            console.log(answer);
-            console.log(selectedID);
-            console.log(results);
+            // console.log(answer);
+            // console.log(selectedID);
+            
           
             for (var i = 0; i < results.length; i++) {
-        
+              console.log(results.length);
+              console.log(answer.purchaseQuantity)
             // connection.query("SELECT * FROM products", function(error, results) {
 
-            if (selectedQuantity > results[i].stock_quantity) {
+            if (answer.purchaseQuantity > results[i].stock_quantity) {
               console.log(
                 "Sorry, not enough stock. Please select the product and a lower quantity until our stocks have been replenished, we aplogize for the inconvenience."
               );
               // selectionPrompt();
-              console.log(error);
+              // console.log(error);
             } else {
               // console.log("Product: " + results[0].product_name);
-              console.log(answer.stock_quantity);
+              // console.log(answer.stock_quantity);
             }
             }
           }

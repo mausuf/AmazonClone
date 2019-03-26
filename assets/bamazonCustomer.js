@@ -68,6 +68,7 @@ connection.connect(function(err) {
         //Connection to database to verify stock quantity
         var query = "SELECT * FROM products WHERE id = ?"
         var purchaseItemID;
+        var productName = "SELECT product_name FROM products";
         
         connection.query(query,answer.purchaseItemID,function(error, results) {
           
@@ -79,19 +80,19 @@ connection.connect(function(err) {
             
           
             for (var i = 0; i < results.length; i++) {
-              console.log(results.length);
-              console.log(answer.purchaseQuantity)
+              console.log("You selected " + results[i].product_name + " with quantity of " + answer.purchaseQuantity);
+
             // connection.query("SELECT * FROM products", function(error, results) {
 
             if (answer.purchaseQuantity > results[i].stock_quantity) {
               console.log(
                 "Sorry, not enough stock. Please select the product and a lower quantity until our stocks have been replenished, we aplogize for the inconvenience."
               );
-              // selectionPrompt();
+              selectionPrompt();
               // console.log(error);
             } else {
-              // console.log("Product: " + results[0].product_name);
-              // console.log(answer.stock_quantity);
+              console.log("Product: " + results[0].product_name);
+              
             }
             }
           }

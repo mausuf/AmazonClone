@@ -2,7 +2,7 @@
 // -------------------Setup------------------------------
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-var Table = require('cli-table');
+var Table = require("cli-table");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -44,7 +44,7 @@ connection.connect(function(err) {
   }
 
   //-------------------------------------------------------
-  ////--------------Run bamazon App------------------------
+  //----------------Run bamazon App------------------------
   showInventory();
 
   //-------------------------------------------------------
@@ -66,24 +66,25 @@ connection.connect(function(err) {
       ])
       .then(function(answer) {
         //Connection to database to verify stock quantity
-        var query = "SELECT * FROM products WHERE id = ?"
+        var query = "SELECT * FROM products WHERE id = ?";
         var purchaseItemID;
         var productName = "SELECT product_name FROM products";
-        
-        connection.query(query,answer.purchaseItemID,function(error, results) {
-          
-            var selectedID = parseInt((answer.id) - 1, 10);
-            var selectedQuantity = parseInt(answer.stock_quantity, 10);
-            
-            // console.log(answer);
-            // console.log(selectedID);
-            
-          
-            for (var i = 0; i < results.length; i++) {
-              console.log("You selected " + results[i].product_name + " with quantity of " + answer.purchaseQuantity);
 
-            // connection.query("SELECT * FROM products", function(error, results) {
-
+        connection.query(query, answer.purchaseItemID, function(
+          error,
+          results
+        ) {
+          // var selectedID = parseInt((answer.id) - 1, 10);
+          // var selectedQuantity = parseInt(answer.stock_quantity, 10);
+          // console.log(answer);
+          // console.log(selectedID);
+          for (var i = 0; i < results.length; i++) {
+            console.log(
+              "You selected " +
+                results[i].product_name +
+                " with quantity of " +
+                answer.purchaseQuantity
+            );
             if (answer.purchaseQuantity > results[i].stock_quantity) {
               console.log(
                 "Sorry, not enough stock. Please select the product and a lower quantity until our stocks have been replenished, we aplogize for the inconvenience."
@@ -91,15 +92,37 @@ connection.connect(function(err) {
               selectionPrompt();
               // console.log(error);
             } else {
-              console.log("Product: " + results[0].product_name);
-              
-            }
-            }
-          }
-        );
-      // });
-    });
-  }
+              console.log("------------------------------------");
+              console.log(
+                "We can fullfill your order of " + results[i].product_name
+              );
+              console.log(
+                "Your total will be $" +
+                  results[i].price * answer.purchaseQuantity
+              );
+
+              var newStock =
+                results[i].stock_quantity - answer.purchaseQuantity;
+              var purchaseID = answer.purchaseItemID;
+              checkout(newStock, purchaseID);
+            };
+          };
+        });
+      });
+  };
+
+  //-------------------------------------------------------
+  // -----------------Customer Checkout--------------------
+  function checkout(newStock, purchaseID) {
+    inquirer.prompt([{
+      name: "checkout",
+      type: "confirm",
+      message:
+        "Are you sure you would like to purchase this item and quantity amount?", 
+      default: true
+    }]);
+  };
+
 
   //Always keep /.end otherwise it will stay connected
   // connection.end();

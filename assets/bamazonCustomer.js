@@ -2,6 +2,8 @@
 // -------------------Setup------------------------------
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require('cli-table');
+
 var connection = mysql.createConnection({
   host: "localhost",
   // Port
@@ -23,20 +25,20 @@ connection.connect(function(err) {
     connection.query("SELECT * FROM products", function(error, results) {
       console.log("----------------------------------------------------");
       // ---Create Table---
+      var inventoryTable = new Table({
+        head: ["Item ID#", "Department", "Product", "Price", "Quantity"],
+        colWidths: [10, 20, 20, 10, 10]
+      });
       for (var i = 0; i < results.length; i++) {
-        console.log(
-          results[i].id +
-            " | " +
-            results[i].department_name +
-            "|" +
-            results[i].product_name +
-            " | $" +
-            results[i].price +
-            " | " +
-            results[i].stock_quantity
-        );
+        inventoryTable.push([
+          results[i].id,
+          results[i].department_name,
+          results[i].product_name,
+          results[i].price,
+          results[i].stock_quantity
+        ]);
       }
-      console.log("----------------------------------------------------");
+      console.log(inventoryTable.toString());
       selectionPrompt();
     });
   }
@@ -47,7 +49,7 @@ connection.connect(function(err) {
 
   //-------------------------------------------------------
   // ---------------------Inquirer-------------------------
-  function selectionPrompt() {
+  function selectionPrompt(answer) {
     inquirer
       .prompt([
         {
@@ -62,22 +64,27 @@ connection.connect(function(err) {
           message: "How many units of this product would you like to purchase?"
         }
       ])
-      .then(function(buyPrompt) {
+      .then(function(answer) {
         //Connection to database to verify stock quantity
         connection.query(
-          "SELECT * FROM products WHERE id=?",
-          buyPrompt.purchaseItemID,
+          "SELECT * FROM products WHERE ?",
+          {id: answer.purchaseItemID},
           function(error, results) {
-            for (var i = 0; i < results.length; i++) {
-              if (buyPrompt.purchaseQuantity > results[i.stock_quantity]) {
-                console.log(
-                  "Sorry, not enough stock. Please select the product and a lower quanity until our stocks have been replenished, we aplogize for the inconvenience."
-                );
-                selectionPrompt(itemsForSale);
-              } else {
-                console.log("Product: " + results[i.product_name]);
-              }
+            // for (var i = 0; i < results.length; i++) {
+            var selectedID = (answer.id) - 1;
+            var selectedQuantity = parseInt(answer.stock_quantity);
+            if (selectedQuantity > selectedID.stock_quantity) {
+              console.log(
+                "Sorry, not enough stock. Please select the product and a lower quantity until our stocks have been replenished, we aplogize for the inconvenience."
+              );
+              selectionPrompt();
+              console.log(error);
+              
+            } else {
+              // console.log("Product: " + results[0].product_name);
+              console.log(answer.stock_quantity);
             }
+            // }
           }
         );
       });

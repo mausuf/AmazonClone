@@ -56,7 +56,7 @@ connection.connect(function(err) {
           name: "purchaseItemID",
           type: "input",
           message:
-            "Please enter the ID number of the item you would like to purchase?"
+            "Hello, my friend. Stay awhile and listen... Please enter the ID number of the item you would like to purchase?"
         },
         {
           name: "purchaseQuantity",
@@ -140,11 +140,15 @@ connection.connect(function(err) {
             function(error, results) {}
           );
           console.log("Thank you for your purchase");
+          showInventory();
         } else {
           console.log(
             "No problem, we hope you come back again soon to see our new inventory!"
           );
           showInventory();
+          console.log(
+            "We have more items for you to purchase!"
+          )
         }
       });
   }
